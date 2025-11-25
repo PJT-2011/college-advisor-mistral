@@ -18,8 +18,8 @@ flowchart TD
     GetSession --> CreateOrchestrator[Create OrchestratorAgent]
     CreateOrchestrator --> BuildContext[Build User Context]
     
-    BuildContext --> FetchProfile[Fetch User Profile<br/>- Name, Major, Year<br/>- Interests, Stress Level]
-    BuildContext --> FetchHistory[Fetch Last 10 Messages<br/>for Context]
+    BuildContext --> FetchProfile[Fetch User Profile]
+    BuildContext --> FetchHistory[Fetch Last 10 Messages for Context]
     
     FetchProfile --> ContextReady[Context Ready]
     FetchHistory --> ContextReady
@@ -27,67 +27,67 @@ flowchart TD
     ContextReady --> ClassifyIntent{Classify Intent}
     
     ClassifyIntent -->|Crisis Keywords| CrisisCheck{Crisis Detection}
-    CrisisCheck -->|"want to die"<br/>"suicide"<br/>"kill myself"| CrisisResponse[WellnessAgent:<br/>Crisis Response]
+    CrisisCheck -->|Crisis Detected| CrisisResponse[WellnessAgent: Crisis Response]
     
-    CrisisResponse --> CrisisResources[Provide Immediate Resources:<br/>- 988 Lifeline<br/>- Crisis Text Line 741741<br/>- Campus Counseling<br/>- Emergency Services]
+    CrisisResponse --> CrisisResources[Provide Immediate Resources: 988 Lifeline, Crisis Text Line, Campus Counseling]
     
     ClassifyIntent -->|Academic Keywords| AcademicAgent[AcademicAgent]
     ClassifyIntent -->|Wellness Keywords| WellnessAgent[WellnessAgent]
     ClassifyIntent -->|Campus Keywords| CampusAgent[CampusLifeAgent]
     ClassifyIntent -->|General| GeneralAgent[General Handler]
     
-    AcademicAgent --> BuildPrompt1[Build Context Prompt:<br/>- User Profile<br/>- Conversation History<br/>- Current Question]
+    AcademicAgent --> BuildPrompt1[Build Context Prompt with User Profile and History]
     WellnessAgent --> StressDetect{Detect Stress Level}
     CampusAgent --> BuildPrompt3[Build Context Prompt]
     
-    StressDetect -->|High: overwhelmed, panic| UpdateStress1[Update Profile: Stress=8]
-    StressDetect -->|Medium: stressed, anxious| UpdateStress2[Update Profile: Stress=6]
-    StressDetect -->|Low: concerned, nervous| UpdateStress3[Update Profile: Stress=4]
+    StressDetect -->|High Keywords| UpdateStress1[Update Profile Stress Level to 8]
+    StressDetect -->|Medium Keywords| UpdateStress2[Update Profile Stress Level to 6]
+    StressDetect -->|Low Keywords| UpdateStress3[Update Profile Stress Level to 4]
     StressDetect -->|None| BuildPrompt2[Build Context Prompt]
     
     UpdateStress1 --> BuildPrompt2
     UpdateStress2 --> BuildPrompt2
     UpdateStress3 --> BuildPrompt2
     
-    BuildPrompt1 --> LMStudio[Call LM Studio API<br/>http://localhost:1234]
+    BuildPrompt1 --> LMStudio[Call LM Studio API]
     BuildPrompt2 --> LMStudio
     BuildPrompt3 --> LMStudio
     GeneralAgent --> LMStudio
     
-    LMStudio --> MistralModel[Mistral-7B-Instruct v0.3<br/>Local Model]
-    MistralModel --> GenerateResponse[Generate Response<br/>Max Tokens: 1024<br/>Temperature: 0.7]
+    LMStudio --> MistralModel[Mistral-7B-Instruct v0.3 Local Model]
+    MistralModel --> GenerateResponse[Generate Response with max 1024 tokens]
     
-    GenerateResponse --> CombineContext[Combine:<br/>- System Prompt<br/>- User Context<br/>- User Message]
+    GenerateResponse --> CombineContext[Combine System Prompt, User Context, and User Message]
     
     CombineContext --> AIResponse[AI Response Generated]
     CrisisResources --> SaveMessages
     
-    AIResponse --> SaveMessages[Save to Database:<br/>1. User Message<br/>2. Assistant Message]
+    AIResponse --> SaveMessages[Save to Database: User Message and Assistant Message]
     
-    SaveMessages --> SaveUserMsg[(INSERT INTO messages<br/>role: user<br/>content: question<br/>userId, intent, agentType)]
-    SaveMessages --> SaveAIMsg[(INSERT INTO messages<br/>role: assistant<br/>content: response<br/>agentType, metadata)]
+    SaveMessages --> SaveUserMsg[(INSERT INTO messages with user role)]
+    SaveMessages --> SaveAIMsg[(INSERT INTO messages with assistant role)]
     
     SaveUserMsg --> CheckAdvice{Generate Advice Log?}
     SaveAIMsg --> CheckAdvice
     
-    CheckAdvice -->|Important Advice| SaveAdvice[(INSERT INTO advice_logs<br/>category, title, content<br/>priority, status)]
+    CheckAdvice -->|Important Advice| SaveAdvice[(INSERT INTO advice_logs)]
     CheckAdvice -->|Regular Chat| ReturnResponse
     SaveAdvice --> ReturnResponse
     
     ReturnResponse[Return Response to Frontend]
-    ReturnResponse --> ReloadHistory[Reload Chat History<br/>GET /api/chat/history?limit=50]
+    ReturnResponse --> ReloadHistory[Reload Chat History from Database]
     
-    ReloadHistory --> ReverseOrder[Reverse Messages<br/>Oldest → Newest]
-    ReverseOrder --> FormatMessages[Format Messages:<br/>- id, role, content<br/>- agent, timestamp<br/>- isNew flag for last AI message]
+    ReloadHistory --> ReverseOrder[Reverse Messages to Chronological Order]
+    ReverseOrder --> FormatMessages[Format Messages with metadata]
     
-    FormatMessages --> TypewriterCheck{isNew === true?}
-    TypewriterCheck -->|Yes| Typewriter[Apply Typewriter Effect<br/>20ms per character<br/>Blinking cursor]
+    FormatMessages --> TypewriterCheck{isNew flag true?}
+    TypewriterCheck -->|Yes| Typewriter[Apply Typewriter Effect at 20ms per character]
     TypewriterCheck -->|No| InstantShow[Show Message Instantly]
     
     Typewriter --> DisplayMessages[Display All Messages]
     InstantShow --> DisplayMessages
     
-    DisplayMessages --> ClearFlag[Clear newestMessageId Flag<br/>after 100ms]
+    DisplayMessages --> ClearFlag[Clear newestMessageId Flag after 100ms]
     ClearFlag --> AutoScroll[Auto-scroll to Bottom]
     AutoScroll --> Ready[Ready for Next Message]
     
@@ -141,29 +141,29 @@ flowchart TD
     
     Orchestrator --> Intent{Intent Classification}
     
-    Intent -->|study, exam, course, GPA| Academic[AcademicAgent<br/>Study Tips, Time Management<br/>Exam Prep, Course Selection]
+    Intent -->|study, exam, course, GPA| Academic[AcademicAgent: Study Tips and Time Management]
     
-    Intent -->|stress, anxiety, mental health| Wellness[WellnessAgent<br/>Emotional Support<br/>Stress Management<br/>Crisis Detection]
+    Intent -->|stress, anxiety, mental health| Wellness[WellnessAgent: Emotional Support and Stress Management]
     
-    Intent -->|clubs, housing, events| Campus[CampusLifeAgent<br/>Social Life, Organizations<br/>Housing, Campus Resources]
+    Intent -->|clubs, housing, events| Campus[CampusLifeAgent: Social Life and Organizations]
     
-    Intent -->|general, help, greetings| General[General Handler<br/>Basic Responses<br/>Feature Overview]
+    Intent -->|general, help, greetings| General[General Handler: Basic Responses]
     
-    Academic --> SystemPrompt1[System Prompt:<br/>Expert Academic Advisor<br/>Evidence-based techniques<br/>Personalized to major/year]
+    Academic --> SystemPrompt1[System Prompt: Expert Academic Advisor]
     
-    Wellness --> SystemPrompt2[System Prompt:<br/>Compassionate Wellness Advisor<br/>24/7 Support, CBT/Mindfulness<br/>Crisis Resources]
+    Wellness --> SystemPrompt2[System Prompt: Compassionate Wellness Advisor]
     
-    Campus --> SystemPrompt3[System Prompt:<br/>Enthusiastic Campus Advisor<br/>Recommendations by interests<br/>Social & Housing Support]
+    Campus --> SystemPrompt3[System Prompt: Enthusiastic Campus Advisor]
     
-    SystemPrompt1 --> BaseAgent[BaseAgent Class<br/>Shared Methods]
+    SystemPrompt1 --> BaseAgent[BaseAgent Class with Shared Methods]
     SystemPrompt2 --> BaseAgent
     SystemPrompt3 --> BaseAgent
     
-    BaseAgent --> BuildContext[buildContextPrompt:<br/>- User Profile<br/>- Conversation History<br/>- Current Question]
+    BaseAgent --> BuildContext[buildContextPrompt method]
     
-    BaseAgent --> Generate[generate method:<br/>Call Mistral Service]
+    BaseAgent --> Generate[generate method: Call Mistral Service]
     
-    Generate --> Mistral[MistralService<br/>Local LLM Interface]
+    Generate --> Mistral[MistralService Local LLM Interface]
     
     style Orchestrator fill:#FF5722
     style Academic fill:#4CAF50
@@ -216,7 +216,7 @@ erDiagram
     
     USERS {
         string id PK
-        string email UNIQUE
+        string email UK
         string passwordHash
         string name
         datetime createdAt
@@ -289,19 +289,19 @@ flowchart TD
     Features --> F5[Local Privacy]
     Features --> F6[Typewriter Effect]
     
-    F1 --> F1A[Always available<br/>No wait times<br/>Immediate responses]
+    F1 --> F1A[Always available, no wait times, immediate responses]
     
-    F2 --> F2A[Keyword scanning:<br/>suicide, die, kill myself]
-    F2A --> F2B[Immediate crisis resources<br/>988, Crisis Text Line<br/>No AI generation]
+    F2 --> F2A[Keyword scanning for crisis detection]
+    F2A --> F2B[Immediate crisis resources like 988 and Crisis Text Line]
     
-    F3 --> F3A[Detects from keywords:<br/>overwhelmed=8, stressed=6]
-    F3A --> F3B[Updates user profile<br/>Shown in dashboard<br/>Used in future context]
+    F3 --> F3A[Detects stress from keywords]
+    F3A --> F3B[Updates user profile and shows in dashboard]
     
-    F4 --> F4A[Remembers last 6 messages<br/>User profile details<br/>Personalized responses]
+    F4 --> F4A[Remembers last 6 messages and user profile details]
     
-    F5 --> F5A[All data in local SQLite<br/>LM Studio runs locally<br/>No cloud API calls]
+    F5 --> F5A[All data in local SQLite, LM Studio runs locally]
     
-    F6 --> F6A[20ms per character<br/>Blinking cursor<br/>Only new AI messages]
+    F6 --> F6A[20ms per character with blinking cursor]
     
     style F2 fill:#f44336
     style F2A fill:#ff9800
