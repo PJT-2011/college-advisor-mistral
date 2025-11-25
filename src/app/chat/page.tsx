@@ -172,6 +172,19 @@ export default function ChatPage() {
     }
   };
 
+  const handleStopGeneration = async () => {
+    try {
+      await fetch("/api/chat/stop", { method: "POST" });
+      setIsLoading(false);
+      toast({
+        title: "Stopped",
+        description: "AI generation stopped",
+      });
+    } catch (error) {
+      console.error("Stop generation error:", error);
+    }
+  };
+
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -269,7 +282,7 @@ export default function ChatPage() {
         </div>
 
         {/* Input */}
-        <ChatInput onSend={handleSendMessage} disabled={isLoading} />
+        <ChatInput onSend={handleSendMessage} onStop={handleStopGeneration} disabled={isLoading} isGenerating={isLoading} />
       </div>
     </div>
   );

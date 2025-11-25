@@ -72,6 +72,17 @@ export class WellnessAgent extends BaseAgent {
     console.log('[WellnessAgent] Crisis detection check:', { message: message.substring(0, 50), crisisDetected });
     if (crisisDetected) {
       console.log('[WellnessAgent] CRISIS DETECTED - Returning immediate response');
+      
+      // Update stress level to 10 for crisis
+      if (context.userId && context.userProfile?.profile?.id) {
+        try {
+          await this.updateStressLevel(context.userProfile.profile.id, 10);
+          console.log('[WellnessAgent] Stress level updated to 10 (CRISIS)');
+        } catch (error) {
+          console.error('Failed to update stress level:', error);
+        }
+      }
+      
       return this.handleCrisisResponse(message, context);
     }
     

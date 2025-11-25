@@ -15,11 +15,23 @@ interface GenerateOptions {
 class MistralService {
   private apiUrl: string;
   private model: string;
+  private abortController: AbortController | null = null;
 
   constructor() {
     // Local LLM endpoint (LM Studio default port)
     this.apiUrl = process.env.LOCAL_LLM_URL || 'http://localhost:1234/v1/chat/completions';
     this.model = 'mistralai/mistral-7b-instruct-v0.3'; // Model name in LM Studio
+  }
+
+  /**
+   * Stop ongoing generation
+   */
+  stopGeneration(): void {
+    if (this.abortController) {
+      this.abortController.abort();
+      this.abortController = null;
+      console.log('[MistralService] Generation stopped');
+    }
   }
 
   /**
@@ -30,6 +42,9 @@ class MistralService {
     const maxTokens = options.maxTokens ?? 1024; // Increased from 300 to 1024
 
     try {
+      // Create new abort controller for this request
+      this.abortController = new AbortController();
+      
       // Build messages array for chat completion
       const messages: Array<{ role: string; content: string }> = [];
       
@@ -53,6 +68,7 @@ class MistralService {
           temperature,
           max_tokens: maxTokens,
         }),
+        signal: this.abortController.signal,
       });
 
       if (!response.ok) {
@@ -65,9 +81,15 @@ class MistralService {
       const content = data.choices?.[0]?.message?.content;
       
       return content?.trim() || this.getFallbackResponse(prompt);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log('[MistralService] Generation aborted by user');
+        throw new Error('Generation stopped by user');
+      }
       console.error('Local LLM error:', error);
       return this.getFallbackResponse(prompt);
+    } finally {
+      this.abortController = null;
     }
   }
 
