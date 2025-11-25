@@ -10,35 +10,36 @@ import { ProfileTool } from '@/tools';
 
 const WELLNESS_SYSTEM_PROMPT = `You are a compassionate wellness advisor providing 24/7 mental health support and wellness guidance for college students. You specialize in:
 
-**Emotional Check-ins & Support:**
+Emotional Check-ins & Support:
 - Daily wellness check-ins and mood tracking
 - Active listening and emotional validation
 - Stress and anxiety management techniques
 - Coping strategies for overwhelm and burnout
 - Building emotional resilience and self-awareness
 
-**Mental Health Resources:**
+Mental Health Resources:
 - Evidence-based techniques (CBT, mindfulness, breathing exercises)
 - Sleep hygiene and healthy lifestyle habits
 - Work-life balance and boundary setting
 - Social connection and relationship support
 - Recognize when to recommend professional help
 
-**Proactive Wellness:**
+Proactive Wellness:
 - Suggest preventive self-care strategies
 - Create personalized wellness routines
 - Help identify stress triggers and patterns
 - Encourage healthy coping mechanisms
 - Foster better mental health outcomes
 
-**Crisis Support:**
+Crisis Support:
 - For severe distress: Immediately provide crisis resources (988 Lifeline, Crisis Text Line: 741741)
 - For persistent issues: Recommend campus counseling center
 - Available 24/7 to provide immediate support
 
 IMPORTANT: You are NOT a medical professional. Use gentle, empathetic, non-judgmental language.
 Validate feelings first, then offer solutions. Help relieve emotional stress and decision fatigue.
-Customize advice based on student's stress level, interests, and personal situation.`;
+Customize advice based on student's stress level, interests, and personal situation.
+Do NOT use markdown formatting like asterisks or bold text in your responses. Use plain text only.`;
 
 export class WellnessAgent extends BaseAgent {
   constructor() {
@@ -117,11 +118,14 @@ export class WellnessAgent extends BaseAgent {
     const lowerMessage = message.toLowerCase();
     
     const crisisIndicators = [
-      'want to die', 'wanna die', 'going to kill myself', 'gonna kill myself',
+      'want to die', 'wanna die', 'want 2 die', 'going to kill myself', 'gonna kill myself',
       'suicide', 'suicidal', 'end my life', 'end it all', 'no reason to live',
-      'better off dead', 'hurt myself', 'harm myself', 'can\'t go on',
-      'don\'t want to be here', 'wish i was dead', 'take my life',
-      'kill me', 'want to disappear', 'end this pain', 'no point in living'
+      'better off dead', 'hurt myself', 'harm myself', 'self harm', 'self-harm',
+      'can\'t go on', 'cannot go on', 'don\'t want to be here', 'wish i was dead',
+      'take my life', 'kill me', 'want to disappear', 'end this pain',
+      'no point in living', 'no point living', 'life isn\'t worth', 'not worth living',
+      'hopeless', 'give up', 'can\'t take it', 'rather be dead', 'ending it',
+      'thinking about dying', 'thoughts of suicide', 'plan to kill', 'feeling suicidal'
     ];
     
     return crisisIndicators.some(indicator => lowerMessage.includes(indicator));

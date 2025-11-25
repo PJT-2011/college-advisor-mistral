@@ -200,22 +200,22 @@ Be friendly, supportive, and provide practical advice when possible.`;
       const lowerMessage = message.toLowerCase();
       
       let response = "I'm here to help with:\n\n";
-      response += "📚 **Academic Support**: Study tips, time management, exam preparation\n";
-      response += "💚 **Wellness**: Stress management, mental health resources\n";
-      response += "🎓 **Campus Life**: Clubs, events, resources, and activities\n\n";
+      response += "📚 Academic Support: Study tips, time management, exam preparation\n";
+      response += "💚 Wellness: Stress management, mental health resources\n";
+      response += "🎓 Campus Life: Clubs, events, resources, and activities\n\n";
       response += "What would you like help with?";
 
       if (lowerMessage.includes('help') || lowerMessage.includes('what can you do')) {
         response = "I'm your college advisor assistant! I can help you with:\n\n";
-        response += "- **Academic planning** - study schedules, exam prep, course advice\n";
-        response += "- **Wellness support** - stress management, work-life balance\n";
-        response += "- **Campus resources** - finding clubs, services, and activities\n\n";
+        response += "- Academic planning - study schedules, exam prep, course advice\n";
+        response += "- Wellness support - stress management, work-life balance\n";
+        response += "- Campus resources - finding clubs, services, and activities\n\n";
         response += "Just ask me anything about college life!";
       } else if (lowerMessage.includes('thank')) {
-        response = "You're welcome! Feel free to ask if you need anything else. I'm here to help! 😊";
+        response = "You're welcome! Feel free to ask if you need anything else. I'm here to help!";
       } else if (lowerMessage.includes('hi') || lowerMessage.includes('hello')) {
         const name = context.userProfile?.name || 'there';
-        response = `Hi ${name}! 👋 How can I help you today? I can assist with academics, wellness, or campus life questions.`;
+        response = `Hi ${name}! How can I help you today? I can assist with academics, wellness, or campus life questions.`;
       }
 
       return {
