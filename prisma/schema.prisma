@@ -1,0 +1,147 @@
+// Prisma schema for College Advisor Mistral
+// Database: PostgreSQL (change to mongodb if preferred)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USER AUTHENTICATION
+// ============================================================================
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  profile       UserProfile?
+  messages      Message[]
+  adviceLogs    AdviceLog[]
+  
+  @@map("users")
+}
+
+// ============================================================================
+// USER PROFILE (Personalization Data)
+// ============================================================================
+
+model UserProfile {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Profile fields
+  major         String?
+  year          String?   // Freshman, Sophomore, Junior, Senior
+  interests     String?   // Comma-separated interests
+  stressLevel   String?   // low, medium, high
+  goals         String?   // Long-term goals
+  timezone      String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@map("user_profiles")
+}
+
+// ============================================================================
+// CHAT MESSAGES (Conversation History)
+// ============================================================================
+
+model Message {
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  role          String    // user, assistant, system
+  content       String
+  intent        String?   // academic, wellness, campus_life, general, emergency
+  agentType     String?   // orchestrator, academic, wellness, campus_life
+  
+  metadata      String?   // Additional context, tool calls, etc. (JSON string)
+  
+  createdAt     DateTime  @default(now())
+  
+  @@map("messages")
+  @@index([userId, createdAt])
+}
+
+// ============================================================================
+// ADVICE LOGS (Generated Advice/Recommendations)
+// ============================================================================
+
+model AdviceLog {
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  category      String    // study_plan, wellness_check, campus_resource, time_management
+  title         String
+  content       String
+  agentType     String    // Which agent generated this
+  
+  priority      String?   // low, medium, high, urgent
+  status        String    @default("active") // active, completed, archived
+  
+  metadata      String?   // Tool outputs, schedules, etc. (JSON string)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@map("advice_logs")
+  @@index([userId, category, createdAt])
+}
+
+// ============================================================================
+// CAMPUS RESOURCES (Clubs, Services, Events)
+// ============================================================================
+
+model CampusResource {
+  id            String    @id @default(uuid())
+  
+  category      String    // club, service, event, facility, support
+  name          String
+  description   String
+  location      String?
+  contactInfo   String?
+  website       String?
+  hours         String?
+  
+  tags          String?   // For search/filtering (comma-separated)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@map("campus_resources")
+  @@index([category, tags])
+}
+
+// ============================================================================
+// AGENT MEMORY (For Context Persistence)
+// ============================================================================
+
+model AgentMemory {
+  id            String    @id @default(uuid())
+  userId        String
+  
+  key           String    // e.g., "last_study_plan", "stress_patterns"
+  value         String    // Flexible storage for agent-specific data (JSON string)
+  agentType     String    // Which agent owns this memory
+  
+  expiresAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@map("agent_memory")
+  @@unique([userId, agentType, key])
+  @@index([userId, agentType])
+}
