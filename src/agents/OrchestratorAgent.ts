@@ -130,12 +130,24 @@ export class OrchestratorAgent {
 
   /**
    * Quick keyword-based classification (before LLM)
+   * CRITICAL: Instant crisis detection without waiting for LLM
    */
   private quickClassify(message: string): IntentType | null {
     const msg = message.toLowerCase();
 
-    // Emergency keywords
-    const emergencyKeywords = ['suicide', 'kill myself', 'want to die', 'self-harm'];
+    // Emergency keywords - matches WellnessAgent crisis detection
+    const emergencyKeywords = [
+      'want to die', 'wanna die', 'want 2 die', 'going to kill myself', 'gonna kill myself',
+      'suicide', 'suicidal', 'end my life', 'end it all', 'no reason to live',
+      'better off dead', 'hurt myself', 'harm myself', 'self harm', 'self-harm',
+      'can\'t go on', 'cannot go on', 'don\'t want to be here', 'wish i was dead',
+      'take my life', 'kill me', 'want to disappear', 'end this pain',
+      'no point in living', 'no point living', 'life isn\'t worth', 'not worth living',
+      'hopeless', 'give up', 'can\'t take it', 'rather be dead', 'ending it',
+      'thinking about dying', 'thoughts of suicide', 'plan to kill', 'feeling suicidal',
+      'kill myself'
+    ];
+    
     if (emergencyKeywords.some(kw => msg.includes(kw))) {
       return 'emergency';
     }
