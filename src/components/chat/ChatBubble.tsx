@@ -15,14 +15,29 @@ interface ChatBubbleProps {
   isNew?: boolean; // Flag to indicate if this is a newly added message
 }
 
+// Check if message is a crisis response
+function isCrisisResponse(content: string, toolsUsed?: string[]): boolean {
+  return (
+    toolsUsed?.includes('crisis-detection') ||
+    toolsUsed?.includes('crisis-intervention') ||
+    content.includes('🆘 IMMEDIATE HELP') ||
+    content.includes('National Suicide Prevention Lifeline')
+  );
+}
+
 export function ChatBubble({ role, content, agent, toolsUsed, timestamp, isNew = false }: ChatBubbleProps) {
   const isUser = role === "user";
-  const [displayedContent, setDisplayedContent] = useState(isUser || !isNew ? content : "");
-  const [isTyping, setIsTyping] = useState(!isUser && isNew);
+  const isCrisis = isCrisisResponse(content, toolsUsed);
+  
+  // Skip typewriter effect for crisis responses
+  const shouldTypewrite = !isUser && isNew && !isCrisis;
+  
+  const [displayedContent, setDisplayedContent] = useState(isUser || !isNew || isCrisis ? content : "");
+  const [isTyping, setIsTyping] = useState(shouldTypewrite);
 
   useEffect(() => {
-    // Only apply typewriter effect for new assistant messages
-    if (!isUser && isNew && content) {
+    // Only apply typewriter effect for new assistant messages that are NOT crisis responses
+    if (shouldTypewrite && content) {
       let currentIndex = 0;
       setDisplayedContent("");
       setIsTyping(true);
@@ -42,7 +57,7 @@ export function ChatBubble({ role, content, agent, toolsUsed, timestamp, isNew =
       setDisplayedContent(content);
       setIsTyping(false);
     }
-  }, [content, isUser, isNew]);
+  }, [content, shouldTypewrite]);
 
   return (
     <motion.div
