@@ -69,7 +69,9 @@ export class WellnessAgent extends BaseAgent {
     
     // CRITICAL: Check for crisis/suicidal indicators FIRST
     const crisisDetected = this.detectCrisis(message);
+    console.log('[WellnessAgent] Crisis detection check:', { message: message.substring(0, 50), crisisDetected });
     if (crisisDetected) {
+      console.log('[WellnessAgent] CRISIS DETECTED - Returning immediate response');
       return this.handleCrisisResponse(message, context);
     }
     
@@ -119,16 +121,20 @@ export class WellnessAgent extends BaseAgent {
     
     const crisisIndicators = [
       'want to die', 'wanna die', 'want 2 die', 'going to kill myself', 'gonna kill myself',
-      'suicide', 'suicidal', 'end my life', 'end it all', 'no reason to live',
+      'kill myself', 'suicide', 'suicidal', 'end my life', 'end it all', 'no reason to live',
       'better off dead', 'hurt myself', 'harm myself', 'self harm', 'self-harm',
       'can\'t go on', 'cannot go on', 'don\'t want to be here', 'wish i was dead',
-      'take my life', 'kill me', 'want to disappear', 'end this pain',
+      'take my life', 'want to disappear', 'end this pain',
       'no point in living', 'no point living', 'life isn\'t worth', 'not worth living',
-      'hopeless', 'give up', 'can\'t take it', 'rather be dead', 'ending it',
-      'thinking about dying', 'thoughts of suicide', 'plan to kill', 'feeling suicidal'
+      'rather be dead', 'ending it', 'thinking about dying', 'thoughts of suicide', 
+      'plan to kill', 'feeling suicidal', 'want to end', 'ready to die'
     ];
     
-    return crisisIndicators.some(indicator => lowerMessage.includes(indicator));
+    const detected = crisisIndicators.some(indicator => lowerMessage.includes(indicator));
+    if (detected) {
+      console.log('[WellnessAgent] Crisis keyword detected in message');
+    }
+    return detected;
   }
 
   /**
