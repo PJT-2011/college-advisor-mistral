@@ -216,7 +216,19 @@ export class WellnessAgent extends BaseAgent {
   private detectStressLevel(message: string): number | null {
     const lowerMessage = message.toLowerCase();
     
-    // High stress indicators (7-10)
+    // Crisis level (10) - matches crisis indicators
+    const crisisIndicators = [
+      'want to die', 'wanna die', 'want 2 die', 'going to kill myself', 'gonna kill myself',
+      'kill myself', 'suicide', 'suicidal', 'end my life', 'end it all', 'no reason to live',
+      'better off dead', 'hurt myself', 'harm myself', 'self harm', 'self-harm',
+      'can\'t go on', 'cannot go on', 'don\'t want to be here', 'wish i was dead',
+      'take my life', 'want to disappear', 'end this pain',
+      'no point in living', 'no point living', 'life isn\'t worth', 'not worth living',
+      'rather be dead', 'ending it', 'thinking about dying', 'thoughts of suicide', 
+      'plan to kill', 'feeling suicidal', 'want to end', 'ready to die'
+    ];
+    
+    // High stress indicators (7-9)
     const highStress = [
       'overwhelmed', 'can\'t cope', 'breaking down', 'panic', 'crisis',
       'can\'t handle', 'too much', 'drowning', 'collapsing', 'desperate'
@@ -233,7 +245,9 @@ export class WellnessAgent extends BaseAgent {
       'concerned', 'nervous', 'unsure', 'tired', 'busy', 'pressure'
     ];
     
-    if (highStress.some(word => lowerMessage.includes(word))) {
+    if (crisisIndicators.some(word => lowerMessage.includes(word))) {
+      return 10;
+    } else if (highStress.some(word => lowerMessage.includes(word))) {
       return 8;
     } else if (mediumHighStress.some(word => lowerMessage.includes(word))) {
       return 6;
