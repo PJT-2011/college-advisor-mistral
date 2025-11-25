@@ -75,6 +75,13 @@ export class WellnessAgent extends BaseAgent {
       return this.handleCrisisResponse(message, context);
     }
     
+    // Check for potential danger/warning indicators (false positives)
+    const dangerIndicator = this.detectPotentialDanger(message);
+    if (dangerIndicator) {
+      console.log('[WellnessAgent] Potential danger indicator detected');
+      toolsUsed.push('danger-detection');
+    }
+    
     // Detect stress level from message
     const detectedStressLevel = this.detectStressLevel(message);
     
@@ -109,8 +116,29 @@ export class WellnessAgent extends BaseAgent {
       content: responseContent,
       confidence: 0.9,
       toolsUsed,
-      metadata,
+      metadata: {
+        agentType: 'wellness',
+        supportType: 'emotional-wellbeing',
+        showEmergencyPopup: dangerIndicator, // Flag for frontend
+        ...metadata,
+      },
     };
+  }
+
+  /**
+   * Detect potential danger indicators that should trigger emergency popup (not full crisis)
+   */
+  private detectPotentialDanger(message: string): boolean {
+    const lowerMessage = message.toLowerCase();
+    
+    const dangerIndicators = [
+      'in danger', 'are you in danger', 'feeling unsafe', 'not safe',
+      'scared for my life', 'afraid of', 'threatening', 'being threatened',
+      'domestic violence', 'abusive relationship', 'being hurt',
+      'someone hurting me', 'afraid to go home'
+    ];
+    
+    return dangerIndicators.some(indicator => lowerMessage.includes(indicator));
   }
 
   /**

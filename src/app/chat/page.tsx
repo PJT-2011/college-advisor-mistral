@@ -8,6 +8,7 @@ import { AlertCircle } from "lucide-react";
 import { ChatBubble } from "@/components/chat/ChatBubble";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { AgentThinking } from "@/components/chat/AgentThinking";
+import { EmergencyPopup } from "@/components/chat/EmergencyPopup";
 import { Navbar } from "@/components/layout/Navbar";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -19,6 +20,7 @@ interface Message {
   toolsUsed?: string[];
   timestamp: Date;
   isNew?: boolean; // Track if this is a newly added message for typewriter effect
+  metadata?: any; // Add metadata field
 }
 
 export default function ChatPage() {
@@ -29,6 +31,7 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentAgent, setCurrentAgent] = useState<string>("");
   const [newestMessageId, setNewestMessageId] = useState<string | null>(null); // Track the newest AI message
+  const [showEmergencyPopup, setShowEmergencyPopup] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Redirect if not authenticated
@@ -71,6 +74,7 @@ export default function ChatPage() {
           agent: msg.agentType,
           toolsUsed: msg.metadata?.toolsUsed,
           timestamp: new Date(msg.createdAt),
+          metadata: msg.metadata,
           // Only apply typewriter to the last assistant message if we just sent a message
           isNew: shouldApplyTypewriter && msg.role === 'assistant' && index === messages.length - 1,
         }));
@@ -119,6 +123,11 @@ export default function ChatPage() {
       const data = await res.json();
       
       setCurrentAgent(data.metadata?.agent || "");
+      
+      // Check if we should show emergency popup
+      if (data.metadata?.showEmergencyPopup) {
+        setShowEmergencyPopup(true);
+      }
       
       // Reload history from server to get saved messages with real IDs
       await loadHistory();
@@ -181,6 +190,12 @@ export default function ChatPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/20">
       <Navbar />
+
+      {/* Emergency Popup */}
+      <EmergencyPopup 
+        show={showEmergencyPopup} 
+        onClose={() => setShowEmergencyPopup(false)} 
+      />
 
       <div className="flex-1 flex flex-col max-w-5xl mx-auto w-full px-4 py-6">
         {/* Header */}
