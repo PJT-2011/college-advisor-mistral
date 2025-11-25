@@ -1,22 +1,22 @@
-# 🎓 AI College Life Advisor - Agentic Chatbot (Local Mistral)
+# AI College Life Advisor - Agentic Chatbot (Local Mistral)
 
 A **production-ready, full-stack agentic AI chatbot** for college students running **entirely locally** using **Mistral LLM**. Features a multi-agent orchestration system, beautiful UI, and complete personalization.
 
-**⚡ CPU-Optimized for AMD Ryzen 5 3600** - 5-10 second responses with 12-thread utilization
+**CPU-Optimized for AMD Ryzen 5 3600** - 5-10 second responses with 12-thread utilization
 
 ---
 
-## 🎯 Quick Links
+## Quick Links
 
-- **[15-Minute Setup Guide](QUICKSTART.md)** ← Start here
-- **[CPU Optimization Guide](CPU_OPTIMIZATION.md)** ← Ryzen 5 3600 tuning
-- **[Frontend Component Guide](COMPONENT_GUIDE.md)** ← Build UI
-- **[Quick Reference Card](QUICK_REFERENCE.md)** ← One-page cheatsheet
-- **[Complete Feature List](STATUS.md)** ← What's built
+- **[15-Minute Setup Guide](QUICKSTART.md)** - Start here
+- **[CPU Optimization Guide](CPU_OPTIMIZATION.md)** - Ryzen 5 3600 tuning
+- **[Frontend Component Guide](COMPONENT_GUIDE.md)** - Build UI
+- **[Quick Reference Card](QUICK_REFERENCE.md)** - One-page cheatsheet
+- **[Complete Feature List](STATUS.md)** - What's built
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### **Multi-Agent System**
 ```
@@ -56,7 +56,7 @@ Synthesized Response → User
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### **Prerequisites**
 - **Node.js** 20+ (tested on 20.11.0)
@@ -156,7 +156,7 @@ npm start
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 college-advisor-mistral/
@@ -234,7 +234,7 @@ college-advisor-mistral/
 
 ---
 
-## 🎨 UI Features
+## UI Features
 
 ### **Design System**
 - **Color Palette**: Soft gradients (blue, purple, teal)
@@ -288,7 +288,7 @@ college-advisor-mistral/
 
 ---
 
-## 🤖 Multi-Agent System
+## Multi-Agent System
 
 ### **Orchestrator Agent**
 ```typescript
@@ -343,7 +343,7 @@ college-advisor-mistral/
 
 ---
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### **Authentication**
 ```
@@ -386,7 +386,7 @@ GET    /api/resources/search?q=...   # Search resources
 
 ---
 
-## 🧪 Testing the System
+## Testing the System
 
 ### **Test Queries**
 
@@ -428,7 +428,7 @@ GET    /api/resources/search?q=...   # Search resources
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### **Mistral Model Settings**
 
@@ -465,7 +465,7 @@ DATABASE_URL="mongodb://localhost:27017/college_advisor_mistral"
 
 ---
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### **Model Not Loading**
 ```
@@ -505,7 +505,7 @@ docker ps
 
 ---
 
-## 📦 Deployment
+## Deployment
 
 ### **Local Server (Production)**
 
@@ -560,16 +560,16 @@ docker run --gpus all -p 3000:3000 ...
 
 ---
 
-## 🔐 Security
+## Security
 
 ### **Best Practices**
-✅ Passwords hashed with bcrypt (12 rounds)
-✅ JWT tokens with expiration
-✅ SQL injection prevention (Prisma ORM)
-✅ XSS protection (React auto-escaping)
-✅ CSRF protection (NextAuth)
-✅ Rate limiting on API routes
-✅ Input validation with Zod
+- Passwords hashed with bcrypt (12 rounds)
+- JWT tokens with expiration
+- SQL injection prevention (Prisma ORM)
+- XSS protection (React auto-escaping)
+- CSRF protection (NextAuth)
+- Rate limiting on API routes
+- Input validation with Zod
 
 ### **Production Checklist**
 - [ ] Change `NEXTAUTH_SECRET` to strong random value
@@ -581,7 +581,7 @@ docker run --gpus all -p 3000:3000 ...
 
 ---
 
-## 📊 Database Schema
+## Database Schema
 
 See `prisma/schema.prisma` for full schema.
 
@@ -595,9 +595,9 @@ See `prisma/schema.prisma` for full schema.
 
 ---
 
-## 🎯 Roadmap
+## Roadmap
 
-### **Phase 1: Core Features** ✅
+### **Phase 1: Core Features** (Complete)
 - [x] Multi-agent orchestration
 - [x] Local Mistral integration
 - [x] Database and auth
@@ -622,7 +622,7 @@ See `prisma/schema.prisma` for full schema.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 This is a reference implementation for agentic AI with local LLMs. Feel free to:
 - Add new agents for specialized domains
@@ -632,13 +632,13 @@ This is a reference implementation for agentic AI with local LLMs. Feel free to:
 
 ---
 
-## 📝 License
+## License
 
 MIT License - use however you want!
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Mistral AI**: For the incredible open-source LLM
 - **Georgi Gerganov (ggerganov)**: For llama.cpp
@@ -648,7 +648,7 @@ MIT License - use however you want!
 
 ---
 
-## 💡 Tips
+## Tips
 
 **For Students:**
 - Be specific in your questions
@@ -664,7 +664,7 @@ MIT License - use however you want!
 
 ---
 
-**Built with ❤️ for college students**
+**Built for college students everywhere**
 
 Need help? Check the code comments or open an issue!
 
